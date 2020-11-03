@@ -1,6 +1,5 @@
 # Study_Adain
----
-
+<br>
 <br>Study Repository For Adaptive Instance Normalization
 
 <br>Original Paper : [link](https://arxiv.org/abs/1703.06868)
