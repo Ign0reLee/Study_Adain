@@ -24,20 +24,15 @@ def load_image(path_to_img):
     img = cv2.imread(path_to_img)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (256,256)).astype(np.float32)
-    
-
-    if not (len(img.shape) == 4):
-        img = np.expand_dims(img, 0)
-
 
     return img
 
 def make_image_minbatch(path_to_img):
 
-    batches = load_image(path_to_img[0])
+    batches = []
 
-    for path  in path_to_img[1:]:
-        batches = tf.concat([batches, load_image(path)], axis=0)
+    for path  in path_to_img:
+        batches.append(load_image(path))
         
     return preprocess_input(batches)
 
