@@ -34,7 +34,7 @@ def make_image_minbatch(path_to_img):
     for path  in path_to_img:
         batches.append(load_image(path))
         
-    return preprocess_input(batches)
+    return preprocess_input(np.array(batches))
 
 def data_batch(path_to_img, batch_size=8):
     

@@ -61,13 +61,11 @@ class AdaIn_Transfer(Model):
         
     def AdaIN(self, content, style, eps=1e-5):
         
-        content_mean, content_var = tf.nn.moments(content, axes =[1,2])
-        style_mean, style_var   = tf.nn.moments(style, axes =[1,2])
+        content_mean, content_var = tf.nn.moments(content, axes =[1,2], keepdims = True)
+        style_mean, style_var   = tf.nn.moments(style, axes =[1,2], keepdims=True)
         
-        content_mean = tf.expand_dims(tf.expand_dims(content_mean, axis=1), axis=1)
-        content_std =  tf.expand_dims(tf.expand_dims(tf.sqrt(content_var + eps), axis=1), axis=1)
-        style_mean =   tf.expand_dims(tf.expand_dims(style_mean,axis=1), axis=1)
-        style_std   =  tf.expand_dims(tf.expand_dims(tf.sqrt(style_var + eps),axis=1), axis=1)
+        content_std =  tf.sqrt(content_var + eps)
+        style_std   =  tf.sqrt(style_var + eps)
         norm = tf.math.divide((content-content_mean),content_std)
         
         return tf.math.add(tf.math.multiply(norm, style_std), style_mean)
