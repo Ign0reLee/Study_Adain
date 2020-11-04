@@ -25,8 +25,8 @@ glob
 # Usage
 <br>
 
-```python
-train.py --ct ContentPathYouWant --st StylePathYouWant
+```bash
+python train.py --ct ContentPathYouWant --st StylePathYouWant
 ```
 
 optional
@@ -36,7 +36,23 @@ optional
 - lr : learning rate (default: 1e-4)<br>
 - batch_size : batch size (default: 8)<br>
 - epochs : epochs (default: 2)<br>
+- visual_dir : check points path (default: ./Visualization_Training/)<br>
 - save_dir : check points path (default: ./CheckPoints/)<br>
+
+<br><br>
+
+# Testing
+<br>
+
+```bash
+python test.py --ct ContentImagePathYouWant --st StyleImagePathYouWant
+```
+
+optional
+
+- load_index : batch size (default: -1)<br>
+- load_dir : learning rate (default: ./CheckPoints/)<br>
+- out_dir : epochs (default: ./Outputs/)<br>
 
 
 

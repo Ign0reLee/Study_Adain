@@ -65,7 +65,6 @@ def train_step(ct_features, st_features):
 
 
 # Define Layer
-My_Layer = ['block4_conv1'] 
 Loss_Layer = ['block1_conv1','block2_conv1','block3_conv1','block4_conv1'] 
 
 
@@ -85,9 +84,8 @@ Train_Style_Path,   Validation_Style_Path   = Style_Path [:max_value],  Style_Pa
 # Define Train Model
 
 encoder = pre_vgg(Loss_Layer)
-model = AdaIn_Transfer(My_Layer)
+model = AdaIn_Transfer()
 optimizer = tf.optimizers.Adam(learning_rate=lr)
-model.compile(optimizer=optimizer)
 
 # Define Validation Data
 val_c = load_image(Validation_Content_Path[0])
@@ -117,16 +115,19 @@ for epoch in range(epochs):
         ct_features = encoder(ct_img)
         st_features = encoder(st_img)
         train_step(ct_features,st_features)
-        step +=1
-
+        
+        #Validate Every 2000 Step
         if( step % 2000 ==0): 
 
             val_image = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
-            file_name = str(epoch)+"Epoch_"+str(step)+"Step"
+            file_name = str(epoch)+"_"+str(step)
             plt.imsave(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
-            model.save(os.path.join(Save_Path, file_name+"_Adain.h5")) 
+            model.save_weights(os.path.join(Save_Path, file_name+"_Adain.ckpt")) 
 
+        step +=1
+
+    #Validate Evry Epoch
     val_image = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
-    file_name = str(epoch)+"Epoch_"+str(step)+"Step"
+    file_name = str(epoch)+"_"+str(step)
     plt.imsave(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
-    model.save(os.path.join(Save_Path, file_name+"Adain.h5")) 
+    model.save_weights(os.path.join(Save_Path, file_name+"Adain.ckpt")) 

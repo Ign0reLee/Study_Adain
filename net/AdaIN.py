@@ -10,10 +10,8 @@ from tensorflow.keras.models import Model
 
 class AdaIn_Transfer(Model):
     
-    def __init__(self, layers):
+    def __init__(self):
         super(AdaIn_Transfer, self).__init__(name = "AdaIn_Transfer")
-        #self.encoder = pre_vgg(layers)
-        #self.encoder.trainable = False
         
         self.relu = ReLU()
         self.conv4_1 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='SAME')
@@ -35,10 +33,7 @@ class AdaIn_Transfer(Model):
     
         
     def call(self, content_inputs, style_inputs):
-        
-        #out_content = self.encoder(content_inputs)
-        #out_style   = self.encoder(style_inputs)
-        
+                
         self.out = self.AdaIN(content_inputs, style_inputs)
         
         h = self.relu(self.conv4_1(self.out))
