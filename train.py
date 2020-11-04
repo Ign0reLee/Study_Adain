@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(usage="train.py --ct ContentDirectory --st Styl
 parser.add_argument("--ct", help="Content Directory You Wants")
 parser.add_argument("--st", help="Style Directory You Wants")
 parser.add_argument("--lr", help="Learning Rate You Wansts", default=1e-4)
+parser.add_argument("--lr_decay", help="Learning Rate Decay", default=5e-5)
 parser.add_argument("--cw", help="Content Weight You Wants", default=1.0)
 parser.add_argument("--sw", help="Style Weight You Wants", default=1e-2)
 parser.add_argument("--epochs", help="How Many Epochs You Wants", default=2)
@@ -38,11 +39,12 @@ Content_Path   = args.ct
 Style_Path     = args.st
 Save_Path      = args.save_dir
 Visual_Path    = args.visual_dir
-lr             = args.lr
-batch_size     = args.batch_size
-Content_Weight = args.cw
-Style_Weight   = args.sw
-epochs         = args.epochs
+lr             = float(args.lr)
+lr_decay       = float(args.lr_decay)
+batch_size     = int(args.batch_size)
+Content_Weight = float(args.cw)
+Style_Weight   = float(args.sw)
+epochs         = int(args.epochs)
 
 if not os.path.exists(Save_Path):    os.mkdir(Save_Path)
 if not os.path.exists(Visual_Path):    os.mkdir(Visual_Path)
@@ -85,7 +87,8 @@ Train_Style_Path,   Validation_Style_Path   = Style_Path [:max_value],  Style_Pa
 
 encoder = pre_vgg(Loss_Layer)
 model = AdaIn_Transfer()
-optimizer = tf.optimizers.Adam(learning_rate=lr)
+lr_schedule = k.optimizers.schedules.ExponentialDecay(lr, decay_steps=1, decay_rate=lr_decay, staircase=False)
+optimizer = tf.optimizers.Adam(learning_rate=lr_schedule)
 
 # Define Validation Data
 val_c = load_image(Validation_Content_Path[0])

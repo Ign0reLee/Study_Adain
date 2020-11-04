@@ -29,6 +29,7 @@ optional
 - cw : content weight (default: 1.0)<br>
 - sw : style weight (default: 10.0)<br>
 - lr : learning rate (default: 1e-4)<br>
+- lr_decay : learning rate decay (default: 5e-5)<br>
 - batch_size : batch size (default: 8)<br>
 - epochs : epochs (default: 2)<br>
 - visual_dir : check points path (default: ./Visualization_Training/)<br>
