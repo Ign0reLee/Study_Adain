@@ -66,15 +66,23 @@ class AdaIn_Transfer(Model):
         return tf.math.add(tf.math.multiply(norm, style_std), style_mean)
     
     def Content_Loss(self, output, style):
-        return tf.reduce_mean(tf.math.square(output-style), axis=[1,2,3])
+        return tf.reduce_mean(tf.math.square(output-style))
     
-    def Style_Loss(self, output, style):
+    def Style_Loss(self, output, style, eps = 1e-5):
     
-        output_mean, output_var = tf.nn.moments(output, axes = [1,2])
-        style_mean,  style_var  = tf.nn.moments(style,  axes = [1,2] )
-        output_std, style_std   = tf.math.sqrt(output_var), tf.math.sqrt(style_var)
+        output_mean, output_var = tf.nn.moments(output, axes = [1,2], keepdims=True)
+        style_mean,  style_var  = tf.nn.moments(style,  axes = [1,2], keepdims=True )
+        output_std, style_std   = tf.math.sqrt(output_var + eps), tf.math.sqrt(style_var + eps)
 
-        return tf.reduce_mean(tf.math.square(output_mean-style_mean), axis=1) + tf.reduce_mean(tf.math.square(output_std, style_std), axis=1)
+        mean_loss = tf.reduce_sum(tf.math.squared_difference(output_mean, style_mean))
+        std_loss  = tf.reduce_sum(tf.math.squared_difference(output_std,  style_std))
+
+        n = tf.cast(tf.shape(output)[0],dtype=tf.float32)
+        mean_loss /= n
+        std_loss  /= n
+
+        #return tf.reduce_mean(tf.math.square(output_mean-style_mean)) + tf.reduce_mean(tf.math.square(output_std, style_std))
+        return mean_loss + std_loss
     
     def AdaIN_Loss(self, g_features,c_features, s_features, lam = 10.0):
     

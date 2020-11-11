@@ -59,7 +59,7 @@ def train_step(ct_features, st_features):
         output = model(ct_features[-1], st_features[-1], training=True)
 
         output_features = encoder(output)
-        loss = tf.reduce_mean(model.AdaIN_Loss(output_features, ct_features, st_features, Style_Weight))
+        loss = model.AdaIN_Loss(output_features, ct_features, st_features, Style_Weight)
 
     grad = tape.gradient(loss, model.trainable_weights)
     optimizer.apply_gradients(zip(grad, model.trainable_weights))
@@ -87,7 +87,7 @@ Train_Style_Path,   Validation_Style_Path   = Style_Path [:max_value],  Style_Pa
 
 encoder = pre_vgg(Loss_Layer)
 model = AdaIn_Transfer()
-lr_schedule = k.optimizers.schedules.ExponentialDecay(lr, decay_steps=1, decay_rate=lr_decay, staircase=False)
+lr_schedule = k.optimizers.schedules.InverseTimeDecay(lr, decay_steps=1, decay_rate=lr_decay, staircase=False)
 optimizer = tf.optimizers.Adam(learning_rate=lr_schedule)
 
 # Define Validation Data
@@ -133,4 +133,4 @@ for epoch in range(epochs):
     val_image = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
     file_name = str(epoch)+"_"+str(step)
     plt.imsave(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
-    model.save_weights(os.path.join(Save_Path, file_name+"Adain.ckpt")) 
+    model.save_weights(os.path.join(Save_Path, file_name+"_Adain.ckpt")) 

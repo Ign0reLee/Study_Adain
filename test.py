@@ -23,6 +23,8 @@ parser.add_argument("--st", help="Style File You Wants")
 parser.add_argument("--load_dir", help="Save Check points, You Wants", default=os.path.join(".","CheckPoints"))
 parser.add_argument("--load_index", help="Save Check points, You Wants", default=-1)
 parser.add_argument("--out_dir", help="Save Output Files Path You Wants", default=os.path.join(".","Outputs"))
+parser.add_argument("--epoch", help= " Save Files's Epoch Number", default= 3)
+parser.add_argument("--step", help="Save FIles's Step NUmber", default=39708)
 
 args = parser.parse_args()
 
@@ -31,6 +33,8 @@ Style_Path     = args.st
 Load_Path      = args.load_dir
 Output_Path    = args.out_dir
 Load_index     = args.load_index
+epoch          =int(args.epoch)
+step           =int(args.step)
 
 if not os.path.exists(Output_Path):  os.mkdir(Output_Path)  
 if not os.path.exists(Load_Path):    raise TypeError("Please Check the Load Weight Path")
@@ -39,9 +43,8 @@ if not os.path.exists(Style_Path):   raise TypeError("Please Check the Style Ima
 
 
 # Weight File Load
-
-Weight_Files = glob.glob(os.path.join(Load_Path, "*"))
-Weight_File  = Weight_Files[Load_index]
+ckpt_name = str(epoch)+"_"+str(step) + "_Adain.ckpt"
+Weight_File  = os.path.join(Load_Path,ckpt_name)
 
 # Define Layer
 Loss_Layer = ['block1_conv1','block2_conv1','block3_conv1','block4_conv1'] 
