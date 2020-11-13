@@ -10,6 +10,7 @@ import tensorflow.keras as k
 from net import *
 from tensorflow.keras.layers import  *
 from tensorflow.keras.models import Model
+
 from tensorflow.keras.applications import VGG19 as vgg19
 from tensorflow.keras.applications.vgg19 import preprocess_input
 
@@ -62,11 +63,12 @@ model.load_weights(Weight_File)
 
 #Load Image End Make New File
 
-c = load_image(Content_Path)
-s = load_image(Style_Path)
+c = preprocess_input(load_image(Content_Path))
+s = preprocess_input(load_image(Style_Path))
 
 v_c = encoder(np.expand_dims(c, axis=0))
 v_s = encoder(np.expand_dims(s, axis=0))
 
 output = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
-plt.imsave(os.path.join(Output_Path,file_name+".jpg"),output) 
+cv2.imwrite(os.path.join(Output_Path,file_name+"cv.jpg"),output) 
+plt.imsave(os.path.join(Output_Path,file_name+"plt.jpg"),output)

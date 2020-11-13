@@ -20,7 +20,6 @@ def pre_vgg(layers):
 
 def load_image(path_to_img):
     
-    
     img = cv2.imread(path_to_img)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (256,256)).astype(np.float32)

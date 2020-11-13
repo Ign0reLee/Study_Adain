@@ -47,7 +47,7 @@ Style_Weight   = float(args.sw)
 epochs         = int(args.epochs)
 
 if not os.path.exists(Save_Path):    os.mkdir(Save_Path)
-if not os.path.exists(Visual_Path):    os.mkdir(Visual_Path)
+if not os.path.exists(Visual_Path):  os.mkdir(Visual_Path)
 if not os.path.exists(Content_Path): raise TypeError("Please Check the Content Images Path")
 if not os.path.exists(Style_Path):   raise TypeError("Please Check the Style Images Path")
 
@@ -93,12 +93,12 @@ optimizer = tf.optimizers.Adam(learning_rate=lr_schedule)
 # Define Validation Data
 val_c = load_image(Validation_Content_Path[0])
 val_s = load_image(Validation_Style_Path[0])
-v_c = encoder(np.expand_dims(val_c, axis=0))
-v_s = encoder(np.expand_dims(val_s, axis=0))
-val_c = cv2.cvtColor(val_c.astype("uint8"), cv2.COLOR_RGB2BGR)
-val_s = cv2.cvtColor(val_s.astype("uint8"), cv2.COLOR_RGB2BGR)
-cv2.imwrite(os.path.join(Visual_Path,"Original_Content.jpg"), val_c)
-cv2.imwrite(os.path.join(Visual_Path,"Original_Style.jpg"), val_s)
+plt.imsave(os.path.join(Visual_Path,"Original_Content.jpg"), val_c.astype(np.uint8))
+plt.imsave(os.path.join(Visual_Path,"Original_Style.jpg"), val_s.astype(np.uint8))
+
+v_c = encoder(preprocess_input(np.expand_dims(val_c, axis=0)))
+v_s = encoder(preprocess_input(np.expand_dims(val_s, axis=0)))
+
 
 
 
@@ -124,7 +124,7 @@ for epoch in range(epochs):
 
             val_image = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
             file_name = str(epoch)+"_"+str(step)
-            plt.imsave(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
+            cv2.imwrite(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
             model.save_weights(os.path.join(Save_Path, file_name+"_Adain.ckpt")) 
 
         step +=1
@@ -132,5 +132,5 @@ for epoch in range(epochs):
     #Validate Evry Epoch
     val_image = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
     file_name = str(epoch)+"_"+str(step)
-    plt.imsave(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
+    cv2.imwrite(os.path.join(Visual_Path,file_name+".jpg"),val_image) 
     model.save_weights(os.path.join(Save_Path, file_name+"_Adain.ckpt")) 
