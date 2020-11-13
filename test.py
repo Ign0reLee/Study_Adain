@@ -70,5 +70,4 @@ v_c = encoder(np.expand_dims(c, axis=0))
 v_s = encoder(np.expand_dims(s, axis=0))
 
 output = model(v_c[-1], v_s[-1], training=False)[0].numpy().astype(np.uint8)
-cv2.imwrite(os.path.join(Output_Path,file_name+"cv.jpg"),output) 
-plt.imsave(os.path.join(Output_Path,file_name+"plt.jpg"),output)
+cv2.imwrite(os.path.join(Output_Path,file_name+"_"+str(step)+".jpg"),output) 
