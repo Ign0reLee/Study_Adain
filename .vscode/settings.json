@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/home/cvmi01/anaconda3/envs/adain/bin/python",
+    "terminal.integrated.inheritEnv": true,
+    "terminal.integrated.shell.linux": "/bin/bash"
+}

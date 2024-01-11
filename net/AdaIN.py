@@ -5,7 +5,14 @@ import tensorflow.keras as k
 from tensorflow.keras.layers import  *
 from tensorflow.keras.models import Model
 
-
+class ReflectionPadding2D(ZeroPadding2D):
+    def call(self,x, mask=None):
+        pattern = [[0,0],
+                  self.padding[0],
+                  self.padding[1],
+                  [0,0]]
+        
+        return tf.pad(x, pattern, mode="REFLECT")
 
 
 class AdaIn_Transfer(Model):
@@ -14,42 +21,51 @@ class AdaIn_Transfer(Model):
         super(AdaIn_Transfer, self).__init__(name = "AdaIn_Transfer")
         
         self.relu = ReLU()
-        self.conv4_1 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='SAME')
+        self.replect_padding =  ReflectionPadding2D()
+        self.up = UpSampling2D(size=(2, 2))
+        self.conv4_1 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='VALID')
         
-        self.up1 = UpSampling2D(size=(2, 2))        
-        self.conv3_4 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        self.conv3_3 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        self.conv3_2 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        self.conv3_1 = Conv2D(filters = 128, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        
-        self.up2 = UpSampling2D(size=(2, 2))        
-        self.conv2_2 = Conv2D(filters = 128, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        self.conv2_1 = Conv2D(filters = 64, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        
-        self.up3 = UpSampling2D(size=(2, 2))
-        self.conv1_2 = Conv2D(filters = 64, kernel_size = (3,3), strides=(1, 1), padding='SAME')
-        self.conv1_1 = Conv2D(filters = 3, kernel_size = (3,3), strides=(1, 1), padding='SAME')
+      
+        self.conv3_4 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+        self.conv3_3 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+        self.conv3_2 = Conv2D(filters = 256, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+        self.conv3_1 = Conv2D(filters = 128, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+           
+        self.conv2_2 = Conv2D(filters = 128, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+        self.conv2_1 = Conv2D(filters = 64, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+
+        self.conv1_2 = Conv2D(filters = 64, kernel_size = (3,3), strides=(1, 1), padding='VALID')
+        self.conv1_1 = Conv2D(filters = 3, kernel_size = (3,3), strides=(1, 1), padding='VALID')
        
     
         
     def call(self, content_inputs, style_inputs):
                 
         self.out = self.AdaIN(content_inputs, style_inputs)
+
+        h = self.replect_padding(self.out)
+        h = self.relu(self.conv4_1(h))
         
-        h = self.relu(self.conv4_1(self.out))
-        
-        h = self.up1(h)        
+        h = self.up(h)        
+        h = self.replect_padding(h)
         h = self.relu(self.conv3_4(h))
+        h = self.replect_padding(h)
         h = self.relu(self.conv3_3(h))
+        h = self.replect_padding(h)
         h = self.relu(self.conv3_2(h))
+        h = self.replect_padding(h)
         h = self.relu(self.conv3_1(h))
         
-        h = self.up2(h)        
+        h = self.up(h)        
+        h = self.replect_padding(h)
         h = self.relu(self.conv2_2(h))
+        h = self.replect_padding(h)
         h = self.relu(self.conv2_1(h))
         
-        h = self.up3(h)
+        h = self.up(h)
+        h = self.replect_padding(h)
         h = self.relu(self.conv1_2(h))        
+        h = self.replect_padding(h)
         h = self.relu(self.conv1_1(h))
         
         return h
